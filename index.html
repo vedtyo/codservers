@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CoDServers - Find a Call of Duty server with people in it</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<meta name="description" content="Browse live Call of Duty game servers across Plutonium, IW4x, AlterWare, Aurora, HorizonMW, CoD4x and S2x.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<meta name="robots" content="index, follow">
+<!-- Apply the saved theme synchronously, before the browser can paint the page. -->
+<script>
+(function () {
+    try {
+        var saved = localStorage.getItem("darkMode");
+        var dark = (saved === null || saved === "yes");
+        if (dark) document.documentElement.classList.add("dark-preload");
+    } catch (e) {
+        document.documentElement.classList.add("dark-preload");
+    }
+})();
+</script>
+<style>
+/* Critical anti-flash theme: inline and runs before style.css. */
+
+html.dark-preload,
+html.dark-preload body{
+    background:#0d0e12!important;
+    color:#e7e9ed!important;
+}
+
+html.dark-preload #top-bar{
+    background:rgba(20,22,28,.8)!important;
+    border-bottom-color:#20252d!important;
+}
+
+html.dark-preload button,
+html.dark-preload .toast{
+    background:#111419!important;
+    color:#c7ccd3!important;
+    border-color:#292f39!important;
+}
+
+html.dark-preload .client-tab,
+html.dark-preload .game-pill{
+    background:#151821!important;
+    color:#c7ccd3!important;
+}
+
+html.dark-preload .search-container,
+html.dark-preload .search-container input{
+    background:#151821!important;
+    color:#ddd!important;
+    border-color:#292f39!important;
+}
+
+/* --------- FIX DEL FLASH DE SORT / FILTER --------- */
+
+html.dark-preload #sortFilterBar,
+html.dark-preload .sort-filter-bar,
+html.dark-preload .sort-filter-left,
+html.dark-preload .sort-filter-right{
+    background:#111419!important;
+    color:#c7ccd3!important;
+    border-color:#232733!important;
+}
+
+html.dark-preload .sort-buttons{
+    background:transparent!important;
+}
+
+html.dark-preload .sort-pill{
+    background:#151821!important;
+    color:#c7ccd3!important;
+    border-color:#292f39!important;
+}
+
+html.dark-preload .filter-select-wrapper{
+    background:#151821!important;
+}
+
+html.dark-preload .filter-select{
+    background:#151821!important;
+    color:#c7ccd3!important;
+    border-color:#292f39!important;
+}
+
+html.dark-preload .filter-select option{
+    background:#151821!important;
+    color:#c7ccd3!important;
+}
+
+html.dark-preload .sort-label,
+html.dark-preload .filter-label,
+html.dark-preload .sort-arrow,
+html.dark-preload .select-arrow{
+    color:#c7ccd3!important;
+}
+
+html.dark-preload .trickshot-btn{
+    background:#151821!important;
+    color:#c7ccd3!important;
+    border-color:#292f39!important;
+}
+
+/* ------------------------------------------ */
+
+html.dark-preload .game{
+    background:#151821!important;
+    border-color:#232733!important;
+}
+
+html.dark-preload .game-title,
+html.dark-preload th,
+html.dark-preload .pagination-container,
+html.dark-preload .details-row{
+    background:#111419!important;
+    border-color:#232733!important;
+}
+
+html.dark-preload td{
+    border-color:#1c202a!important;
+}
+
+html.dark-preload #status{
+    color:#747b86!important;
+}
+</style>
+<link rel="stylesheet" href="/css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+</head>
+<body>
+<div id="top-bar">
+    <div class="top-bar-row">
+        <div class="brand-container">
+            <img src="/favicon.png" alt="Favicon" class="brand-icon">
+            <div>
+                <h1 class="brand-title">CoDServers</h1>
+                <div id="status">Updated --:--:--</div>
+            </div>
+        </div>
+        <div id="top-buttons">
+            <button id="topSearchBtn" type="button" title="Search servers" class="search-toggle-btn">
+                <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+            </button>
+            <button id="topFavBtn" type="button" title="Favorites only" class="fav-toggle-btn">⭐<span id="favBadge" class="fav-badge" style="display:none;"></span></button>
+            <button id="darkButton" type="button" title="Toggle theme" class="theme-toggle-btn"><svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+        </div>
+    </div>
+    <div id="topSearchBar" class="top-search-bar" style="display: none;">
+        <div class="top-search-input-wrap">
+            <svg class="search-input-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+            <input id="searchInput" type="text" placeholder="Search servers, maps, modes..." autocomplete="off">
+        </div>
+        <button id="searchButton" type="button" class="top-search-submit-btn">Search</button>
+    </div>
+</div>
+
+<div id="heroBanner" class="hero-banner">
+    <h1 class="hero-title">Find a Call of Duty server with people in it</h1>
+    <div class="hero-stats">
+        <span class="hero-stat-dot"></span>
+        <span class="hero-stat-players" id="heroPlayers">0</span> playing across
+        <span class="hero-stat-servers" id="heroServers">0</span> servers right now
+    </div>
+    <p class="hero-subtitle">
+        Every modded client in one list:
+        <a href="https://plutonium.pw/" target="_blank" rel="noopener noreferrer" class="client-link-inline client-plutonium">Plutonium</a>,
+        <a href="https://iw4x.io/" target="_blank" rel="noopener noreferrer" class="client-link-inline client-iw4x">IW4x</a>,
+        <a href="https://alterware.dev/" target="_blank" rel="noopener noreferrer" class="client-link-inline client-alterware">AlterWare</a>,
+        <a href="https://auroramod.dev/" target="_blank" rel="noopener noreferrer" class="client-link-inline client-aurora">Aurora</a>,
+        <a href="https://horizonmw.org/" target="_blank" rel="noopener noreferrer" class="client-link-inline client-horizonmw">HorizonMW</a>,
+        <a href="https://cod4x.ovh/" target="_blank" rel="noopener noreferrer" class="client-link-inline client-cod4x">CoD4x</a> and
+        <a href="https://discord.gg/PCZ8uPZnaS" target="_blank" rel="noopener noreferrer" class="client-link-inline client-s2x">S2x</a>,
+        covering Call of Duty (2003) through to Call of Duty: WWII. Available player counts refresh every 20 seconds.
+    </p>
+</div>
+
+<!-- CLIENT TABS & GAME SUB-PILLS -->
+<div id="clientTabs" class="client-tabs"></div>
+<div id="subGamePills" class="sub-game-pills"></div>
+
+<div id="searchResultsBanner" class="search-results-banner" style="display: none;">
+    <div class="search-results-info">
+        <svg class="search-banner-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        <span id="searchResultsText">0 servers and 0 players match "..."</span>
+    </div>
+    <button id="bannerClearBtn" type="button" class="banner-clear-btn">✕ Clear</button>
+</div>
+
+<!-- SORT TOOLBAR -->
+<div id="sortFilterBar" class="sort-filter-bar">
+    <div class="sort-filter-left">
+        <span class="sort-label">SORT</span>
+        <div id="sortButtons" class="sort-buttons">
+            <button type="button" class="sort-pill active" data-sort="players">Players <span class="sort-arrow">↓</span></button>
+            <button type="button" class="sort-pill" data-sort="server">Name</button>
+            <button type="button" class="sort-pill" data-sort="country">Country</button>
+        </div>
+    </div>
+</div>
+
+<div id="servers"><div class="updating">Updating live servers list...</div></div>
+<div id="toast" class="toast"></div>
+
+<script src="/js/config.js"></script>
+<script src="/js/geo.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>
+
+
